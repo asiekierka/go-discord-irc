@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	ircf "github.com/qaisjp/go-discord-irc/irc/format"
@@ -248,14 +249,11 @@ func (i *ircListener) OnPrivateMessage(e *irc.Event) {
 		return
 	}
 
-	replacements := []string{}
+	msg := e.Message()
 	for _, con := range i.bridge.ircManager.ircConnections {
-		replacements = append(replacements, con.nick, "<@!"+con.discord.ID+">")
+		reg, _ := regexp.Compile(`\b` + regexp.QuoteMeta(con.nick) + `\b`)
+		msg = reg.ReplaceAllString(msg, "<@!"+con.discord.ID+">")
 	}
-
-	msg := strings.NewReplacer(
-		replacements...,
-	).Replace(e.Message())
 
 	if e.Code == "CTCP_ACTION" {
 		msg = "_" + msg + "_"
