@@ -251,7 +251,7 @@ func (i *ircListener) OnPrivateMessage(e *irc.Event) {
 
 	msg := e.Message()
 	for _, con := range i.bridge.ircManager.ircConnections {
-		reg, _ := regexp.Compile(`\b` + regexp.QuoteMeta(con.nick) + `\b`)
+		reg, _ := regexp.Compile(`\b@` + regexp.QuoteMeta(con.nick) + `\b`)
 		msg = reg.ReplaceAllString(msg, "<@!"+con.discord.ID+">")
 	}
 
